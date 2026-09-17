@@ -5,7 +5,7 @@ import { LogTailer } from "./tailer.js";
 import { matchRules } from "./matcher.js";
 import { createMailer } from "./mailer.js";
 
-class Throttle {
+export class Throttle {
   constructor(ms) {
     this.ms = ms;
     this.lastSent = new Map();
@@ -21,7 +21,7 @@ class Throttle {
   }
 }
 
-async function main() {
+export async function main() {
   const configPath = resolve(process.argv[2] ?? "./config.json");
 
   let config;
@@ -77,7 +77,9 @@ async function main() {
   process.on("SIGTERM", shutdown);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

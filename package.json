@@ -1,0 +1,27 @@
+{
+  "name": "log-alert",
+  "version": "1.0.0",
+  "description": "Follow log files line by line and send an email alert when a configured regex matches.",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "log-alert": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "log",
+    "monitor",
+    "alert",
+    "email",
+    "regex",
+    "tail"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "nodemailer": "^6.9.14"
+  }
+}

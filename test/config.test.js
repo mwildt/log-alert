@@ -41,3 +41,24 @@ test("throws on invalid regex", () => {
     () => normalizeConfig({ logs: [{ path: "/x" }], rules: [{ pattern: "(" }] }, "/c/c.json"),
   );
 });
+
+test("global parserJar is resolved and overridable per log", () => {
+  const cfg = normalizeConfig(
+    {
+      parserJar: "./global.jar",
+      logs: [{ path: "./app.log" }, { path: "./other.log", parserJar: "./other.jar" }],
+      rules: [{ name: "err", pattern: "error" }],
+    },
+    "/etc/log-alert/config.json",
+  );
+  assert.ok(cfg.logs[0].parserJar.endsWith("global.jar"));
+  assert.ok(cfg.logs[1].parserJar.endsWith("other.jar"));
+});
+
+test("parserJar absent yields null per log", () => {
+  const cfg = normalizeConfig(
+    { logs: [{ path: "./app.log" }], rules: [{ name: "err", pattern: "error" }] },
+    "/etc/log-alert/config.json",
+  );
+  assert.equal(cfg.logs[0].parserJar, null);
+});

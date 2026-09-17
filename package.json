@@ -8,6 +8,7 @@
     "log-alert": "src/index.js"
   },
   "scripts": {
+    "build:jar": "javac -d build/classes java-src/com/mwildt/logalert/LogPipeParser.java && jar cfe lib/logpipe-parser.jar com.mwildt.logalert.LogPipeParser -C build/classes com/mwildt/logalert/LogPipeParser.class",
     "start": "node src/index.js",
     "test": "node --test"
   },

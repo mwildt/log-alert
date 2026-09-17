@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { extname, isAbsolute, resolve } from "node:path";
+import { isAbsolute, resolve } from "node:path";
 
 export class ConfigError extends Error {}
 
@@ -29,12 +29,15 @@ export function normalizeConfig(parsed, configPath) {
   const logs = Array.isArray(parsed.logs) ? parsed.logs : [];
   if (logs.length === 0) throw new ConfigError("Config must define at least one log in 'logs'");
 
+  const globalParserJar = resolveMaybePath(parsed.parserJar, baseDir);
+
   const normalizedLogs = logs.map((entry, i) => {
     if (!entry || typeof entry !== "object" || !entry.path) {
       throw new ConfigError(`logs[${i}] is missing a 'path'`);
     }
     const abs = isAbsolute(entry.path) ? entry.path : resolve(baseDir, entry.path);
-    return { path: abs, label: entry.label ?? abs };
+    const parserJar = resolveMaybePath(entry.parserJar, baseDir) ?? globalParserJar;
+    return { path: abs, label: entry.label ?? abs, parserJar };
   });
 
   const rules = Array.isArray(parsed.rules) ? parsed.rules : [];
@@ -58,4 +61,9 @@ export function normalizeConfig(parsed, configPath) {
     mail,
     throttleMs: typeof parsed.throttleMs === "number" ? parsed.throttleMs : 0,
   };
+}
+
+function resolveMaybePath(value, baseDir) {
+  if (!value || typeof value !== "string") return null;
+ return isAbsolute(value) ? value : resolve(baseDir, value);
 }

@@ -4,6 +4,7 @@ import { loadConfig, ConfigError } from "./config.js";
 import { LogTailer } from "./tailer.js";
 import { matchRules } from "./matcher.js";
 import { createMailer } from "./mailer.js";
+import { createJarParser } from "./jarParser.js";
 
 export class Throttle {
   constructor(ms) {
@@ -43,7 +44,19 @@ export async function main() {
 
   for (const log of config.logs) {
     const tailer = new LogTailer(log.path, { label: log.label });
-    tailer.on("line", (line) => {
+    const jarParser = createJarParser(log.parserJar);
+    if (jarParser) console.log(`[log-alert] using parser jar ${log.parserJar} for ${log.label}`);
+
+    tailer.on("line", async (rawLine) => {
+      let line = rawLine;
+      if (jarParser) {
+        try {
+          line = await jarParser.transformLine(rawLine);
+        } catch (err) {
+          console.error(`[parser:${log.label}] ${err.message}`);
+          return;
+        }
+      }
       const hits = matchRules(config.rules, line);
       if (hits.length === 0) return;
 

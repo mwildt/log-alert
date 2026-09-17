@@ -22,5 +22,6 @@
     "to": "admin@example.com",
     "subject": "[log-alert] Match in ${file}: ${rule}"
   },
-  "throttleMs": 5000
+  "throttleMs": 5000,
+  "parserJar": "./lib/logpipe-parser.jar"
 }

@@ -6,6 +6,7 @@ Node.js-Tool, das Log-Dateien verfolgt, jede neue Zeile gegen konfigurierte Rege
 
 ```bash
 npm install
+npm run build:jar   # optional: baut lib/logpipe-parser.jar (JDK nötig)
 ```
 
 ## Konfiguration
@@ -39,6 +40,11 @@ Kopiere `config.example.json` zu `config.json` und passe sie an:
 - `rules` – Liste der Regex-Regeln. `pattern` ist ein Regex-String, `flags` optional (z. B. `"i"`). `enabled: false` deaktiviert eine Regel.
 - `mail` – SMTP-Konfiguration für [nodemailer](https://nodemailer.com/). Wenn weggelassen, läuft das Tool im Dry-Run-Modus und gibt Treffer nur auf der Konsole aus.
 - `throttleMs` – Mindestabstand in Millisekunden zwischen zwei E-Mails pro `datei::regel` (0 deaktiviert das Throttling).
+- `parserJar` – Optionaler Pfad zu einer `.jar` (z. B. `./lib/logpipe-parser.jar`). Jede Log-Zeile wird vor dem Regex-Check durch das Jar gepiped (stdin → stdout, zeilenweise). Pro Log-Eintrag überschreibbar (`logs[].parserJar`).
+
+### Mitgelieferte Parser-Jar (`lib/logpipe-parser.jar`)
+
+Eine kleine Java-Anwendung, die Log-Zeilen von stdin liest, Zeitstempel normalisiert (z. B. `2024/01/02 03:04:05` → `2024-01-02T03:04:05`) und nach stdout schreibt. So können Regeln einheitlich gegen ISO-Zeitstempel formuliert werden. Quelldatei: `java-src/com/mwildt/logalert/LogPipeParser.java`. Neu bauen mit `npm run build:jar` (JDK erforderlich).
 
 ### Variablen im Betreff
 
